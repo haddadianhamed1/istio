@@ -1,0 +1,49 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: hamed
+  name: hamed
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hamed
+      name: hamed
+    spec:
+      containers:
+        - name: hamed
+          image: roylines/nginx
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hamed
+  labels:
+    app: hamed
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+  selector:
+    app: hamed
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hamed
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /hamed1
+        backend:
+          serviceName: hamed
+          servicePort: 80
